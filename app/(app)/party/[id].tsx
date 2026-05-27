@@ -7,6 +7,7 @@ import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { Screen } from "@/components/ui/Screen";
 import { usePartyDetail, usePartyMembers } from "@/hooks/usePartyDetail";
 import { usePartyFeedPosts } from "@/hooks/useFeed";
+import { useMyProfile } from "@/hooks/useProfile";
 
 export default function PartyDetailScreen() {
   const params = useLocalSearchParams<{ id?: string }>();
@@ -21,6 +22,7 @@ export default function PartyDetailScreen() {
   const { data: posts = [], isLoading: isPostsLoading } = usePartyFeedPosts(
     partyId ?? "",
   );
+  const { data: profile } = useMyProfile();
 
   return (
     <Screen className="gap-5 px-4 py-5">
@@ -86,7 +88,11 @@ export default function PartyDetailScreen() {
         ) : posts.length > 0 ? (
           <View className="gap-3">
             {posts.map((post) => (
-              <FeedPostCard key={post.id} post={post} />
+              <FeedPostCard
+                key={post.id}
+                post={post}
+                currentUserId={profile?.id}
+              />
             ))}
           </View>
         ) : (

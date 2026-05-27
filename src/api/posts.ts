@@ -1,6 +1,11 @@
 import { supabase } from "@/api/supabaseClient";
 import { getCurrentUserId } from "@/api/session";
-import type { CommentRow, PostReactionRow, PostRow } from "@/types/supabase";
+import type {
+  CommentRow,
+  PostReactionRow,
+  PostRow,
+  ProfileRow,
+} from "@/types/supabase";
 
 export type CreatePostInput = {
   party_id: string;
@@ -14,12 +19,30 @@ export type CreateCommentInput = {
   parent_comment_id?: string | null;
 };
 
+export type CommentWithAuthorRow = CommentRow & {
+  author: ProfileRow | null;
+};
+
 export async function createPost(input: CreatePostInput) {
   const authorId = await getCurrentUserId();
   const { data, error } = await supabase
     .from("posts")
     .insert({ ...input, author_id: authorId })
     .select("*")
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data as PostRow;
+}
+
+export async function getPostById(postId: string) {
+  const { data, error } = await supabase
+    .from("posts")
+    .select("*")
+    .eq("id", postId)
     .single();
 
   if (error) {
@@ -105,7 +128,7 @@ export async function createComment(input: CreateCommentInput) {
 export async function listCommentsByPost(postId: string) {
   const { data, error } = await supabase
     .from("comments")
-    .select("*")
+    .select("*, author:profiles(*)")
     .eq("post_id", postId)
     .is("deleted_at", null)
     .order("created_at", { ascending: true });
@@ -114,7 +137,7 @@ export async function listCommentsByPost(postId: string) {
     throw error;
   }
 
-  return data as CommentRow[];
+  return data as CommentWithAuthorRow[];
 }
 
 export async function deleteComment(commentId: string) {

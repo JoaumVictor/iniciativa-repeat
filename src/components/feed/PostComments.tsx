@@ -5,6 +5,16 @@ import { Card } from "@/components/ui/Card";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { useCreateCommentMutation, usePostComments } from "@/hooks/useComments";
 
+function getCommentAuthorName(
+  author: { nickname: string | null; username: string | null } | null,
+) {
+  if (!author) {
+    return "Membro da party";
+  }
+
+  return author.nickname ?? author.username ?? "Membro da party";
+}
+
 type PostCommentsProps = {
   postId: string;
   partyId?: string;
@@ -55,7 +65,7 @@ export function PostComments({ postId, partyId }: PostCommentsProps) {
           {comments.map((comment) => (
             <Card key={comment.id} className="gap-1 p-3">
               <Text className="text-xs uppercase tracking-[0.15em] text-slate-400">
-                {comment.author_id}
+                {getCommentAuthorName(comment.author)}
               </Text>
               <Text className="text-sm leading-5 text-slate-200">
                 {comment.content}

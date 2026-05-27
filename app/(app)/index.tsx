@@ -6,9 +6,11 @@ import { Card } from "@/components/ui/Card";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { Screen } from "@/components/ui/Screen";
 import { useMyFeedPosts } from "@/hooks/useFeed";
+import { useMyProfile } from "@/hooks/useProfile";
 
 export default function HomeScreen() {
   const { data: posts = [], isLoading } = useMyFeedPosts();
+  const { data: profile } = useMyProfile();
 
   return (
     <Screen className="gap-5 px-4 py-5">
@@ -40,7 +42,7 @@ export default function HomeScreen() {
 
       <View className="gap-3">
         {posts.map((post) => (
-          <FeedPostCard key={post.id} post={post} />
+          <FeedPostCard key={post.id} post={post} currentUserId={profile?.id} />
         ))}
       </View>
     </Screen>
