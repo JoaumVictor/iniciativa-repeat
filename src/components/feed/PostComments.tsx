@@ -9,6 +9,12 @@ import {
   usePostComments,
   useUpdateCommentMutation,
 } from "@/hooks/useComments";
+import { getErrorMessage } from "@/utils/errors";
+
+type FeedbackState = {
+  type: "success" | "error";
+  message: string;
+};
 
 function getCommentAuthorName(
   author: { nickname: string | null; username: string | null } | null,
@@ -16,6 +22,7 @@ function getCommentAuthorName(
   if (!author) {
     return "Membro da party";
   }
+  const [feedback, setFeedback] = useState<FeedbackState | null>(null);
 
   return author.nickname ?? author.username ?? "Membro da party";
 }
@@ -42,8 +49,21 @@ export function PostComments({
   const handleSubmit = async () => {
     if (!draft.trim()) return;
 
-    await createCommentMutation.mutateAsync(draft.trim());
-    setDraft("");
+    setFeedback(null);
+
+    try {
+      await createCommentMutation.mutateAsync(draft.trim());
+      setDraft("");
+      setFeedback({
+        type: "success",
+        message: "Comentário enviado.",
+      });
+    } catch (error) {
+      setFeedback({
+        type: "error",
+        message: getErrorMessage(error, "Não foi possível comentar."),
+      });
+    }
   };
 
   const handleStartEditing = (commentId: string, content: string) => {
@@ -61,11 +81,27 @@ export function PostComments({
       return;
     }
 
-    await updateCommentMutation.mutateAsync({
-      commentId: editingCommentId,
-      content: editingDraft.trim(),
-    });
-    handleCancelEditing();
+    setFeedback(null);
+
+    try {
+      await updateCommentMutation.mutateAsync({
+        commentId: editingCommentId,
+        content: editingDraft.trim(),
+      });
+      handleCancelEditing();
+      setFeedback({
+        type: "success",
+        message: "Comentário atualizado.",
+      });
+    } catch (error) {
+      setFeedback({
+        type: "error",
+        message: getErrorMessage(
+          error,
+          "Não foi possível editar o comentário.",
+        ),
+      });
+    }
   };
 
   const handleDelete = (commentId: string) => {
@@ -78,7 +114,25 @@ export function PostComments({
         text: "Excluir",
         style: "destructive",
         onPress: () => {
-          deleteCommentMutation.mutate(commentId);
+          void (async () => {
+            setFeedback(null);
+
+            try {
+              await deleteCommentMutation.mutateAsync(commentId);
+              setFeedback({
+                type: "success",
+                message: "Comentário excluído.",
+              });
+            } catch (error) {
+              setFeedback({
+                type: "error",
+                message: getErrorMessage(
+                  error,
+                  "Não foi possível excluir o comentário.",
+                ),
+              });
+            }
+          })();
         },
       },
     ]);
@@ -105,6 +159,17 @@ export function PostComments({
             onPress={handleSubmit}
             disabled={!draft.trim() || createCommentMutation.isPending}
           />
+          {feedback ? (
+            <Text
+              className={`text-sm ${
+                feedback.type === "success"
+                  ? "text-emerald-300"
+                  : "text-rose-300"
+              }`}
+            >
+              {feedback.message}
+            </Text>
+          ) : null}
         </View>
       </View>
 

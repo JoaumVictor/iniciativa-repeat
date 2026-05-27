@@ -54,8 +54,8 @@ export default function HomeScreen() {
             Seu feed ainda est\u00e1 vazio
           </Text>
           <Text className="text-sm leading-6 text-slate-300">
-            Entre em uma party ou crie a sua primeira comunidade para come\u00e7ar
-            a postar e acompanhar a turma.
+            Entre em uma party ou crie a sua primeira comunidade para
+            come\u00e7ar a postar e acompanhar a turma.
           </Text>
           <View className="flex-row gap-3">
             <PrimaryButton

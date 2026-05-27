@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import * as ImagePicker from "expo-image-picker";
 import { router, useLocalSearchParams } from "expo-router";
-import { Image, Text, TextInput, View } from "react-native";
+import { Alert, Image, Text, TextInput, View } from "react-native";
 
 import { getPublicAssetUrl, uploadPostMediaFromUri } from "@/api/storage";
 import { Card } from "@/components/ui/Card";
@@ -12,6 +12,7 @@ import {
   usePostDetail,
   useUpdatePostMutation,
 } from "@/hooks/usePosts";
+import { getErrorMessage } from "@/utils/errors";
 
 export default function PostScreen() {
   const [content, setContent] = useState("");
@@ -54,6 +55,10 @@ export default function PostScreen() {
         await ImagePicker.requestMediaLibraryPermissionsAsync();
 
       if (!permission.granted) {
+        Alert.alert(
+          "Galeria bloqueada",
+          "Libere o acesso às fotos para anexar uma imagem no post.",
+        );
         return;
       }
 
@@ -80,40 +85,60 @@ export default function PostScreen() {
   const handlePublish = async () => {
     if (!partyId || !content.trim()) return;
 
-    let imageUrl: string | null | undefined = existingImageUrl ?? undefined;
+    try {
+      let imageUrl: string | null | undefined = existingImageUrl ?? undefined;
 
-    if (shouldRemoveImage) {
-      imageUrl = null;
-    }
+      if (shouldRemoveImage) {
+        imageUrl = null;
+      }
 
-    if (selectedImageUri) {
-      const fileName = `${partyId}/${Date.now().toString(36)}.jpg`;
-      await uploadPostMediaFromUri(fileName, selectedImageUri);
-      imageUrl = getPublicAssetUrl("post-media", fileName);
-    }
+      if (selectedImageUri) {
+        const fileName = `${partyId}/${Date.now().toString(36)}.jpg`;
+        await uploadPostMediaFromUri(fileName, selectedImageUri);
+        imageUrl = getPublicAssetUrl("post-media", fileName);
+      }
 
-    if (isEditing && postId) {
-      await updatePostMutation.mutateAsync({
-        postId,
-        input: {
+      if (isEditing && postId) {
+        await updatePostMutation.mutateAsync({
+          postId,
+          input: {
+            party_id: partyId,
+            text_content: content.trim(),
+            image_url: imageUrl,
+          },
+        });
+      } else {
+        await createPostMutation.mutateAsync({
           party_id: partyId,
           text_content: content.trim(),
           image_url: imageUrl,
-        },
-      });
-    } else {
-      await createPostMutation.mutateAsync({
-        party_id: partyId,
-        text_content: content.trim(),
-        image_url: imageUrl,
-      });
-    }
+        });
+      }
 
-    setContent("");
-    setSelectedImageUri(null);
-    setExistingImageUrl(null);
-    setShouldRemoveImage(false);
-    router.back();
+      Alert.alert(
+        isEditing ? "Post atualizado" : "Post publicado",
+        isEditing
+          ? "As alterações já foram enviadas para a party."
+          : "Sua publicação já está no feed da party.",
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              setContent("");
+              setSelectedImageUri(null);
+              setExistingImageUrl(null);
+              setShouldRemoveImage(false);
+              router.back();
+            },
+          },
+        ],
+      );
+    } catch (error) {
+      Alert.alert(
+        "Não foi possível salvar o post",
+        getErrorMessage(error, "Tente novamente em alguns instantes."),
+      );
+    }
   };
 
   const isSaving = createPostMutation.isPending || updatePostMutation.isPending;

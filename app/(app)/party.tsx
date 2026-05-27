@@ -14,10 +14,17 @@ import {
   useUnfavoritePartyMutation,
 } from "@/hooks/useParties";
 import { useMyFavoritePartyIds } from "@/hooks/usePartyFavorites";
+import { getErrorMessage } from "@/utils/errors";
+
+type FeedbackState = {
+  type: "success" | "error";
+  message: string;
+};
 
 export default function PartyScreen() {
   const [partyName, setPartyName] = useState("");
   const [inviteCode, setInviteCode] = useState("");
+  const [feedback, setFeedback] = useState<FeedbackState | null>(null);
 
   const { data: parties = [], isLoading } = useMyParties();
   const { data: favoritePartyIds = [] } = useMyFavoritePartyIds();
@@ -33,19 +40,46 @@ export default function PartyScreen() {
   const handleCreateParty = async () => {
     if (!partyName.trim()) return;
 
-    await createPartyMutation.mutateAsync({
-      name: partyName.trim(),
-      is_private: true,
-      invite_code: `repeat-${Date.now().toString(36)}`,
-    });
-    setPartyName("");
+    setFeedback(null);
+
+    try {
+      await createPartyMutation.mutateAsync({
+        name: partyName.trim(),
+        is_private: true,
+        invite_code: `repeat-${Date.now().toString(36)}`,
+      });
+      setPartyName("");
+      setFeedback({
+        type: "success",
+        message:
+          "Party criada. Agora você já pode começar a postar e convidar a galera.",
+      });
+    } catch (error) {
+      setFeedback({
+        type: "error",
+        message: getErrorMessage(error, "Não foi possível criar a party."),
+      });
+    }
   };
 
   const handleJoinParty = async () => {
     if (!inviteCode.trim()) return;
 
-    await joinPartyMutation.mutateAsync(inviteCode.trim());
-    setInviteCode("");
+    setFeedback(null);
+
+    try {
+      await joinPartyMutation.mutateAsync(inviteCode.trim());
+      setInviteCode("");
+      setFeedback({
+        type: "success",
+        message: "Entrada confirmada. A party já deve aparecer na sua lista.",
+      });
+    } catch (error) {
+      setFeedback({
+        type: "error",
+        message: getErrorMessage(error, "Não foi possível entrar na party."),
+      });
+    }
   };
 
   return (
@@ -60,6 +94,25 @@ export default function PartyScreen() {
         <Text className="mt-2 text-base leading-6 text-slate-300">
           Crie uma party, entre por código ou favorite suas comunidades.
         </Text>
+        {feedback ? (
+          <View
+            className={`mt-4 rounded-2xl border px-4 py-3 ${
+              feedback.type === "success"
+                ? "border-emerald-500/30 bg-emerald-500/10"
+                : "border-rose-500/30 bg-rose-500/10"
+            }`}
+          >
+            <Text
+              className={`text-sm leading-6 ${
+                feedback.type === "success"
+                  ? "text-emerald-200"
+                  : "text-rose-200"
+              }`}
+            >
+              {feedback.message}
+            </Text>
+          </View>
+        ) : null}
       </View>
 
       <Card className="gap-4">
@@ -116,7 +169,9 @@ export default function PartyScreen() {
               party={party}
               isFavorite={favoritePartyIdSet.has(party.id)}
               onFavorite={(partyId) => favoritePartyMutation.mutate(partyId)}
-              onUnfavorite={(partyId) => unfavoritePartyMutation.mutate(partyId)}
+              onUnfavorite={(partyId) =>
+                unfavoritePartyMutation.mutate(partyId)
+              }
             />
           ))}
         </View>
@@ -126,8 +181,8 @@ export default function PartyScreen() {
             Nenhuma party por aqui ainda
           </Text>
           <Text className="text-sm leading-6 text-slate-300">
-            Crie uma party com seu grupo de treino ou entre usando um c\u00f3digo
-            de convite para destravar o feed.
+            Crie uma party com seu grupo de treino ou entre usando um
+            c\u00f3digo de convite para destravar o feed.
           </Text>
           <View className="flex-row gap-3">
             <PrimaryButton
