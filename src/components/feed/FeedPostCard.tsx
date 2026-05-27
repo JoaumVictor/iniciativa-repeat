@@ -1,6 +1,9 @@
 import { Text, View } from "react-native";
 
+import { PostComments } from "@/components/feed/PostComments";
 import { Card } from "@/components/ui/Card";
+import { PrimaryButton } from "@/components/ui/PrimaryButton";
+import { useReactToPostMutation } from "@/hooks/usePostReactions";
 import { PostRow } from "@/types/supabase";
 
 type FeedPostCardProps = {
@@ -8,6 +11,8 @@ type FeedPostCardProps = {
 };
 
 export function FeedPostCard({ post }: FeedPostCardProps) {
+  const reactToPostMutation = useReactToPostMutation(post.party_id);
+
   return (
     <Card className="gap-4">
       <View className="flex-row items-center justify-between gap-3">
@@ -37,6 +42,23 @@ export function FeedPostCard({ post }: FeedPostCardProps) {
           Comentários {post.comment_count}
         </Text>
       </View>
+      <View className="flex-row gap-3">
+        <PrimaryButton
+          title={reactToPostMutation.isPending ? "Curtindo..." : "Like"}
+          variant="secondary"
+          onPress={() =>
+            reactToPostMutation.mutate({ postId: post.id, reaction: "like" })
+          }
+        />
+        <PrimaryButton
+          title={reactToPostMutation.isPending ? "Marcando..." : "Deslike"}
+          variant="secondary"
+          onPress={() =>
+            reactToPostMutation.mutate({ postId: post.id, reaction: "dislike" })
+          }
+        />
+      </View>
+      <PostComments postId={post.id} partyId={post.party_id} />
     </Card>
   );
 }

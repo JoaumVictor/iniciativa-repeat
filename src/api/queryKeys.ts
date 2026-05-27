@@ -4,6 +4,10 @@ export const queryKeys = {
   },
   feed: {
     my: ["feed", "my"] as const,
+    party: (partyId: string) => ["feed", "party", partyId] as const,
+  },
+  comments: {
+    byPost: (postId: string) => ["comments", postId] as const,
   },
   parties: {
     all: ["parties", "all"] as const,

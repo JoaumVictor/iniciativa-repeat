@@ -46,6 +46,18 @@ export async function listMyParties() {
   return data as PartyRow[];
 }
 
+export async function listMyFavoritePartyIds() {
+  const { data, error } = await supabase
+    .from("party_favorites")
+    .select("party_id");
+
+  if (error) {
+    throw error;
+  }
+
+  return data.map((item) => item.party_id);
+}
+
 export async function getPartyById(partyId: string) {
   const { data, error } = await supabase
     .from("parties")

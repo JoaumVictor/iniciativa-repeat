@@ -13,18 +13,22 @@ import {
   useMyParties,
   useUnfavoritePartyMutation,
 } from "@/hooks/useParties";
+import { useMyFavoritePartyIds } from "@/hooks/usePartyFavorites";
 
 export default function PartyScreen() {
   const [partyName, setPartyName] = useState("");
   const [inviteCode, setInviteCode] = useState("");
 
   const { data: parties = [], isLoading } = useMyParties();
+  const { data: favoritePartyIds = [] } = useMyFavoritePartyIds();
   const createPartyMutation = useCreatePartyMutation();
   const joinPartyMutation = useJoinPartyMutation();
   const favoritePartyMutation = useFavoritePartyMutation();
   const unfavoritePartyMutation = useUnfavoritePartyMutation();
-
-  const favoritePartyIds = useMemo(() => new Set<string>(), []);
+  const favoritePartyIdSet = useMemo(
+    () => new Set(favoritePartyIds),
+    [favoritePartyIds],
+  );
 
   const handleCreateParty = async () => {
     if (!partyName.trim()) return;
@@ -111,7 +115,7 @@ export default function PartyScreen() {
           <PartyCard
             key={party.id}
             party={party}
-            isFavorite={favoritePartyIds.has(party.id)}
+            isFavorite={favoritePartyIdSet.has(party.id)}
             onFavorite={(partyId) => favoritePartyMutation.mutate(partyId)}
             onUnfavorite={(partyId) => unfavoritePartyMutation.mutate(partyId)}
           />

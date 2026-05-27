@@ -1,4 +1,5 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { Link } from "expo-router";
 import { Text, View } from "react-native";
 
 import { Card } from "@/components/ui/Card";
@@ -26,13 +27,16 @@ export function PartyCard({
             Party
           </Text>
           <Text className="mt-1 text-xl font-bold text-white">
-            {party.name}
-          </Text>
-          {party.description ? (
-            <Text className="mt-2 text-sm leading-5 text-slate-300">
-              {party.description}
-            </Text>
-          ) : null}
+          <View className="flex-row gap-3">
+            <Link href={`/(app)/party/${party.id}`} asChild>
+              <PrimaryButton title="Abrir" variant="secondary" />
+            </Link>
+            <PrimaryButton
+              title={isFavorite ? "Favoritada" : "Favoritar"}
+              variant={isFavorite ? "secondary" : "primary"}
+              onPress={() => (isFavorite ? onUnfavorite?.(party.id) : onFavorite?.(party.id))}
+            />
+          </View>
         </View>
         <View className="rounded-full bg-white/10 p-2">
           <MaterialCommunityIcons

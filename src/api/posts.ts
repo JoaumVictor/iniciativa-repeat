@@ -102,6 +102,21 @@ export async function createComment(input: CreateCommentInput) {
   return data as CommentRow;
 }
 
+export async function listCommentsByPost(postId: string) {
+  const { data, error } = await supabase
+    .from("comments")
+    .select("*")
+    .eq("post_id", postId)
+    .is("deleted_at", null)
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    throw error;
+  }
+
+  return data as CommentRow[];
+}
+
 export async function deleteComment(commentId: string) {
   const { error } = await supabase
     .from("comments")

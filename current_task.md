@@ -73,6 +73,11 @@ Entregas ja iniciadas:
 - fluxo de post preparado em `app/(app)/post.tsx`
 - tela de perfil preparada em `app/(app)/profile.tsx`
 - tela de parties preparada em `app/(app)/party.tsx`
+- detalhe de party preparado em `app/(app)/party/[id].tsx`
+- favoritos de party agora leem do Supabase
+- feed da party agora exibe posts reais
+- reacoes de like e deslike ja funcionam no card do post
+- comentarios de post ja funcionam no feed
 
 ### Fase 4 - Refinos
 

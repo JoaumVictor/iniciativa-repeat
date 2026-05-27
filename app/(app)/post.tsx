@@ -1,12 +1,32 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { router, useLocalSearchParams } from "expo-router";
 import { Text, TextInput, View } from "react-native";
 
+import { createPost } from "@/api/posts";
 import { Card } from "@/components/ui/Card";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { Screen } from "@/components/ui/Screen";
+import { useCreatePostMutation } from "@/hooks/usePosts";
 
 export default function PostScreen() {
   const [content, setContent] = useState("");
+  const params = useLocalSearchParams<{ partyId?: string }>();
+  const partyId = useMemo(
+    () => (Array.isArray(params.partyId) ? params.partyId[0] : params.partyId),
+    [params.partyId],
+  );
+  const createPostMutation = useCreatePostMutation();
+
+  const handlePublish = async () => {
+    if (!partyId || !content.trim()) return;
+
+    await createPostMutation.mutateAsync({
+      party_id: partyId,
+      text_content: content.trim(),
+    });
+    setContent("");
+    router.back();
+  };
 
   return (
     <Screen className="justify-center px-4 py-5">
@@ -23,6 +43,9 @@ export default function PostScreen() {
       </View>
 
       <Card className="gap-4">
+        <Text className="text-xs uppercase tracking-[0.2em] text-slate-400">
+          {partyId ? `Party ${partyId}` : "Selecione uma party"}
+        </Text>
         <TextInput
           multiline
           placeholder="Escreva sua postagem..."
@@ -32,7 +55,11 @@ export default function PostScreen() {
           className="min-h-40 rounded-2xl border border-white/10 bg-slate-900 px-4 py-4 text-base text-white"
           textAlignVertical="top"
         />
-        <PrimaryButton title="Publicar (em breve)" disabled />
+        <PrimaryButton
+          title={createPostMutation.isPending ? "Publicando..." : "Publicar"}
+          onPress={handlePublish}
+          disabled={!partyId || !content.trim() || createPostMutation.isPending}
+        />
       </Card>
     </Screen>
   );
