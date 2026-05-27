@@ -38,13 +38,33 @@ export default function HomeScreen() {
         <Card>
           <Text className="text-slate-300">Carregando feed...</Text>
         </Card>
-      ) : null}
-
-      <View className="gap-3">
-        {posts.map((post) => (
-          <FeedPostCard key={post.id} post={post} currentUserId={profile?.id} />
-        ))}
-      </View>
+      ) : posts.length > 0 ? (
+        <View className="gap-3">
+          {posts.map((post) => (
+            <FeedPostCard
+              key={post.id}
+              post={post}
+              currentUserId={profile?.id}
+            />
+          ))}
+        </View>
+      ) : (
+        <Card className="gap-4">
+          <Text className="text-lg font-semibold text-white">
+            Seu feed ainda est\u00e1 vazio
+          </Text>
+          <Text className="text-sm leading-6 text-slate-300">
+            Entre em uma party ou crie a sua primeira comunidade para come\u00e7ar
+            a postar e acompanhar a turma.
+          </Text>
+          <View className="flex-row gap-3">
+            <PrimaryButton
+              title="Ir para parties"
+              onPress={() => router.push("/(app)/party")}
+            />
+          </View>
+        </Card>
+      )}
     </Screen>
   );
 }

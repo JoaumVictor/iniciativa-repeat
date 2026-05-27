@@ -108,19 +108,42 @@ export default function PartyScreen() {
         <Card>
           <Text className="text-slate-300">Carregando parties...</Text>
         </Card>
-      ) : null}
-
-      <View className="gap-3">
-        {parties.map((party) => (
-          <PartyCard
-            key={party.id}
-            party={party}
-            isFavorite={favoritePartyIdSet.has(party.id)}
-            onFavorite={(partyId) => favoritePartyMutation.mutate(partyId)}
-            onUnfavorite={(partyId) => unfavoritePartyMutation.mutate(partyId)}
-          />
-        ))}
-      </View>
+      ) : parties.length > 0 ? (
+        <View className="gap-3">
+          {parties.map((party) => (
+            <PartyCard
+              key={party.id}
+              party={party}
+              isFavorite={favoritePartyIdSet.has(party.id)}
+              onFavorite={(partyId) => favoritePartyMutation.mutate(partyId)}
+              onUnfavorite={(partyId) => unfavoritePartyMutation.mutate(partyId)}
+            />
+          ))}
+        </View>
+      ) : (
+        <Card className="gap-4">
+          <Text className="text-lg font-semibold text-white">
+            Nenhuma party por aqui ainda
+          </Text>
+          <Text className="text-sm leading-6 text-slate-300">
+            Crie uma party com seu grupo de treino ou entre usando um c\u00f3digo
+            de convite para destravar o feed.
+          </Text>
+          <View className="flex-row gap-3">
+            <PrimaryButton
+              title="Criar agora"
+              onPress={handleCreateParty}
+              disabled={!partyName.trim() || createPartyMutation.isPending}
+            />
+            <PrimaryButton
+              title="Entrar com c\u00f3digo"
+              variant="secondary"
+              onPress={handleJoinParty}
+              disabled={!inviteCode.trim() || joinPartyMutation.isPending}
+            />
+          </View>
+        </Card>
+      )}
     </Screen>
   );
 }

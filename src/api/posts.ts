@@ -10,7 +10,7 @@ import type {
 export type CreatePostInput = {
   party_id: string;
   text_content?: string;
-  image_url?: string;
+  image_url?: string | null;
 };
 
 export type CreateCommentInput = {
@@ -115,6 +115,21 @@ export async function createComment(input: CreateCommentInput) {
   const { data, error } = await supabase
     .from("comments")
     .insert({ ...input, author_id: authorId })
+    .select("*")
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data as CommentRow;
+}
+
+export async function updateComment(commentId: string, content: string) {
+  const { data, error } = await supabase
+    .from("comments")
+    .update({ content })
+    .eq("id", commentId)
     .select("*")
     .single();
 

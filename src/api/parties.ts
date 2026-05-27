@@ -5,7 +5,12 @@ import type {
   PartyJoinRequestRow,
   PartyMemberRow,
   PartyRow,
+  ProfileRow,
 } from "@/types/supabase";
+
+export type PartyMemberWithUserRow = PartyMemberRow & {
+  user: Pick<ProfileRow, "nickname" | "username" | "avatar_url"> | null;
+};
 
 export type CreatePartyInput = {
   name: string;
@@ -75,7 +80,7 @@ export async function getPartyById(partyId: string) {
 export async function listPartyMembers(partyId: string) {
   const { data, error } = await supabase
     .from("party_members")
-    .select("*")
+    .select("*, user:profiles(nickname, username, avatar_url)")
     .eq("party_id", partyId)
     .order("created_at", { ascending: true });
 
@@ -83,7 +88,7 @@ export async function listPartyMembers(partyId: string) {
     throw error;
   }
 
-  return data as PartyMemberRow[];
+  return data as PartyMemberWithUserRow[];
 }
 
 export async function joinPartyByCode(inviteCode: string) {

@@ -9,6 +9,7 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     autoRefreshToken: false,
     detectSessionInUrl: false,
   },
+  accessToken: async () => getSupabaseAccessToken(),
 });
 
 export function getSupabaseAccessToken() {

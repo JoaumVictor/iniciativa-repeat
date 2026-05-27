@@ -17,6 +17,7 @@ export default function PostScreen() {
   const [content, setContent] = useState("");
   const [selectedImageUri, setSelectedImageUri] = useState<string | null>(null);
   const [existingImageUrl, setExistingImageUrl] = useState<string | null>(null);
+  const [shouldRemoveImage, setShouldRemoveImage] = useState(false);
   const [isPickingImage, setIsPickingImage] = useState(false);
   const params = useLocalSearchParams<{ partyId?: string; postId?: string }>();
   const partyId = useMemo(
@@ -40,6 +41,7 @@ export default function PostScreen() {
     setContent(post.text_content ?? "");
     setExistingImageUrl(post.image_url ?? null);
     setSelectedImageUri(null);
+    setShouldRemoveImage(false);
   }, [post, postId]);
 
   const previewImageUri = selectedImageUri ?? existingImageUrl;
@@ -62,16 +64,27 @@ export default function PostScreen() {
 
       if (!result.canceled && result.assets[0]?.uri) {
         setSelectedImageUri(result.assets[0].uri);
+        setShouldRemoveImage(false);
       }
     } finally {
       setIsPickingImage(false);
     }
   };
 
+  const handleRemoveImage = () => {
+    setSelectedImageUri(null);
+    setExistingImageUrl(null);
+    setShouldRemoveImage(true);
+  };
+
   const handlePublish = async () => {
     if (!partyId || !content.trim()) return;
 
-    let imageUrl: string | undefined = existingImageUrl ?? undefined;
+    let imageUrl: string | null | undefined = existingImageUrl ?? undefined;
+
+    if (shouldRemoveImage) {
+      imageUrl = null;
+    }
 
     if (selectedImageUri) {
       const fileName = `${partyId}/${Date.now().toString(36)}.jpg`;
@@ -99,6 +112,7 @@ export default function PostScreen() {
     setContent("");
     setSelectedImageUri(null);
     setExistingImageUrl(null);
+    setShouldRemoveImage(false);
     router.back();
   };
 
@@ -152,6 +166,14 @@ export default function PostScreen() {
           onPress={handlePickImage}
           disabled={isPickingImage || isSaving || isPostLoading}
         />
+        {previewImageUri ? (
+          <PrimaryButton
+            title="Remover foto"
+            variant="secondary"
+            onPress={handleRemoveImage}
+            disabled={isSaving || isPostLoading}
+          />
+        ) : null}
         <PrimaryButton
           title={
             isSaving

@@ -1,9 +1,14 @@
-import { useState } from "react";
+import { Alert, useState } from "react";
 import { Text, TextInput, View } from "react-native";
 
 import { Card } from "@/components/ui/Card";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
-import { useCreateCommentMutation, usePostComments } from "@/hooks/useComments";
+import {
+  useCreateCommentMutation,
+  useDeleteCommentMutation,
+  usePostComments,
+  useUpdateCommentMutation,
+} from "@/hooks/useComments";
 
 function getCommentAuthorName(
   author: { nickname: string | null; username: string | null } | null,
@@ -18,18 +23,65 @@ function getCommentAuthorName(
 type PostCommentsProps = {
   postId: string;
   partyId?: string;
+  currentUserId?: string;
 };
 
-export function PostComments({ postId, partyId }: PostCommentsProps) {
+export function PostComments({
+  postId,
+  partyId,
+  currentUserId,
+}: PostCommentsProps) {
   const [draft, setDraft] = useState("");
+  const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
+  const [editingDraft, setEditingDraft] = useState("");
   const { data: comments = [], isLoading } = usePostComments(postId);
   const createCommentMutation = useCreateCommentMutation(postId, partyId);
+  const updateCommentMutation = useUpdateCommentMutation(postId, partyId);
+  const deleteCommentMutation = useDeleteCommentMutation(postId, partyId);
 
   const handleSubmit = async () => {
     if (!draft.trim()) return;
 
     await createCommentMutation.mutateAsync(draft.trim());
     setDraft("");
+  };
+
+  const handleStartEditing = (commentId: string, content: string) => {
+    setEditingCommentId(commentId);
+    setEditingDraft(content);
+  };
+
+  const handleCancelEditing = () => {
+    setEditingCommentId(null);
+    setEditingDraft("");
+  };
+
+  const handleSaveEditing = async () => {
+    if (!editingCommentId || !editingDraft.trim()) {
+      return;
+    }
+
+    await updateCommentMutation.mutateAsync({
+      commentId: editingCommentId,
+      content: editingDraft.trim(),
+    });
+    handleCancelEditing();
+  };
+
+  const handleDelete = (commentId: string) => {
+    Alert.alert("Excluir comentário", "Esse comentário vai sair do post.", [
+      {
+        text: "Cancelar",
+        style: "cancel",
+      },
+      {
+        text: "Excluir",
+        style: "destructive",
+        onPress: () => {
+          deleteCommentMutation.mutate(commentId);
+        },
+      },
+    ]);
   };
 
   return (
@@ -63,13 +115,70 @@ export function PostComments({ postId, partyId }: PostCommentsProps) {
       ) : comments.length > 0 ? (
         <View className="gap-2">
           {comments.map((comment) => (
-            <Card key={comment.id} className="gap-1 p-3">
+            <Card key={comment.id} className="gap-2 p-3">
               <Text className="text-xs uppercase tracking-[0.15em] text-slate-400">
                 {getCommentAuthorName(comment.author)}
               </Text>
-              <Text className="text-sm leading-5 text-slate-200">
-                {comment.content}
-              </Text>
+              {editingCommentId === comment.id ? (
+                <View className="gap-2">
+                  <TextInput
+                    value={editingDraft}
+                    onChangeText={setEditingDraft}
+                    placeholder="Edite seu comentário"
+                    placeholderTextColor="#64748b"
+                    className="min-h-16 rounded-2xl border border-white/10 bg-slate-900 px-3 py-3 text-white"
+                    multiline
+                  />
+                  <View className="flex-row gap-2">
+                    <PrimaryButton
+                      title={
+                        updateCommentMutation.isPending
+                          ? "Salvando..."
+                          : "Salvar"
+                      }
+                      variant="secondary"
+                      onPress={handleSaveEditing}
+                      disabled={
+                        updateCommentMutation.isPending || !editingDraft.trim()
+                      }
+                    />
+                    <PrimaryButton
+                      title="Cancelar"
+                      variant="secondary"
+                      onPress={handleCancelEditing}
+                      disabled={updateCommentMutation.isPending}
+                    />
+                  </View>
+                </View>
+              ) : (
+                <>
+                  <Text className="text-sm leading-5 text-slate-200">
+                    {comment.content}
+                  </Text>
+                  {currentUserId === comment.author_id ? (
+                    <View className="flex-row gap-2">
+                      <PrimaryButton
+                        title="Editar"
+                        variant="secondary"
+                        onPress={() =>
+                          handleStartEditing(comment.id, comment.content)
+                        }
+                        disabled={deleteCommentMutation.isPending}
+                      />
+                      <PrimaryButton
+                        title={
+                          deleteCommentMutation.isPending
+                            ? "Excluindo..."
+                            : "Excluir"
+                        }
+                        variant="secondary"
+                        onPress={() => handleDelete(comment.id)}
+                        disabled={deleteCommentMutation.isPending}
+                      />
+                    </View>
+                  ) : null}
+                </>
+              )}
             </Card>
           ))}
         </View>

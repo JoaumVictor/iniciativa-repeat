@@ -141,7 +141,11 @@ export function FeedPostCard({ post, currentUserId }: FeedPostCardProps) {
           </>
         ) : null}
       </View>
-      <PostComments postId={post.id} partyId={post.party_id} />
+      <PostComments
+        postId={post.id}
+        partyId={post.party_id}
+        currentUserId={currentUserId}
+      />
     </Card>
   );
 }

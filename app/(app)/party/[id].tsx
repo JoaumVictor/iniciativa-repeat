@@ -1,5 +1,5 @@
 import { useLocalSearchParams, router } from "expo-router";
-import { Text, View } from "react-native";
+import { Image, Text, View } from "react-native";
 
 import { FeedPostCard } from "@/components/feed/FeedPostCard";
 import { Card } from "@/components/ui/Card";
@@ -8,6 +8,13 @@ import { Screen } from "@/components/ui/Screen";
 import { usePartyDetail, usePartyMembers } from "@/hooks/usePartyDetail";
 import { usePartyFeedPosts } from "@/hooks/useFeed";
 import { useMyProfile } from "@/hooks/useProfile";
+
+function getMemberName(member: {
+  user: { nickname: string | null; username: string | null } | null;
+  user_id: string;
+}) {
+  return member.user?.nickname ?? member.user?.username ?? member.user_id;
+}
 
 export default function PartyDetailScreen() {
   const params = useLocalSearchParams<{ id?: string }>();
@@ -70,12 +77,38 @@ export default function PartyDetailScreen() {
         <Text className="text-lg font-semibold text-white">Membros</Text>
         {isMembersLoading ? (
           <Text className="text-slate-300">Carregando membros...</Text>
+        ) : members.length === 0 ? (
+          <Text className="text-sm leading-6 text-slate-300">
+            Ainda n\u00e3o h\u00e1 membros ativos vis\u00edveis nessa party.
+          </Text>
         ) : (
           <View className="gap-2">
             {members.map((member) => (
-              <Text key={member.id} className="text-sm text-slate-300">
-                {member.user_id} · {member.role} · {member.status}
-              </Text>
+              <View
+                key={member.id}
+                className="flex-row items-center gap-3 rounded-2xl border border-white/10 bg-slate-900/70 px-3 py-3"
+              >
+                {member.user?.avatar_url ? (
+                  <Image
+                    source={{ uri: member.user.avatar_url }}
+                    className="h-10 w-10 rounded-full border border-white/10"
+                  />
+                ) : (
+                  <View className="h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-slate-800">
+                    <Text className="text-sm font-semibold text-white">
+                      {getMemberName(member).slice(0, 1).toUpperCase()}
+                    </Text>
+                  </View>
+                )}
+                <View className="flex-1">
+                  <Text className="text-sm font-semibold text-white">
+                    {getMemberName(member)}
+                  </Text>
+                  <Text className="text-xs uppercase tracking-[0.15em] text-slate-400">
+                    {member.role} · {member.status}
+                  </Text>
+                </View>
+              </View>
             ))}
           </View>
         )}
@@ -96,9 +129,24 @@ export default function PartyDetailScreen() {
             ))}
           </View>
         ) : (
-          <Text className="text-sm leading-6 text-slate-300">
-            Ainda não há postagens nesta party.
-          </Text>
+          <Card className="gap-4 border border-dashed border-white/10 bg-slate-900/60 p-4">
+            <Text className="text-lg font-semibold text-white">
+              Abra o placar da party
+            </Text>
+            <Text className="text-sm leading-6 text-slate-300">
+              Essa party ainda n\u00e3o tem posts. Publique o primeiro treino,
+              PR ou foto para puxar a conversa.
+            </Text>
+            <PrimaryButton
+              title="Publicar primeiro post"
+              onPress={() =>
+                router.push({
+                  pathname: "/(app)/post",
+                  params: { partyId: partyId ?? "" },
+                })
+              }
+            />
+          </Card>
         )}
         <PrimaryButton
           title="Novo post nessa party"
