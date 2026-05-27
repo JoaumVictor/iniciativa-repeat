@@ -78,6 +78,7 @@ Entregas ja iniciadas:
 - feed da party agora exibe posts reais
 - reacoes de like e deslike ja funcionam no card do post
 - comentarios de post ja funcionam no feed
+- upload de imagem do post ja funciona e aparece no feed
 
 ### Fase 4 - Refinos
 

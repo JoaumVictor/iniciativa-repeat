@@ -1,5 +1,10 @@
 import { supabase } from "@/api/supabaseClient";
 
+async function uriToBlob(uri: string) {
+  const response = await fetch(uri);
+  return response.blob();
+}
+
 export async function uploadProfileAvatar(filePath: string, file: File) {
   const { data, error } = await supabase.storage
     .from("profile-avatars")
@@ -14,11 +19,49 @@ export async function uploadProfileAvatar(filePath: string, file: File) {
   return data;
 }
 
+export async function uploadProfileAvatarFromUri(
+  filePath: string,
+  uri: string,
+) {
+  const blob = await uriToBlob(uri);
+  const { data, error } = await supabase.storage
+    .from("profile-avatars")
+    .upload(filePath, blob, {
+      upsert: true,
+      contentType: blob.type || "image/jpeg",
+    });
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}
+
 export async function uploadProfileBanner(filePath: string, file: File) {
   const { data, error } = await supabase.storage
     .from("profile-banners")
     .upload(filePath, file, {
       upsert: true,
+    });
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}
+
+export async function uploadProfileBannerFromUri(
+  filePath: string,
+  uri: string,
+) {
+  const blob = await uriToBlob(uri);
+  const { data, error } = await supabase.storage
+    .from("profile-banners")
+    .upload(filePath, blob, {
+      upsert: true,
+      contentType: blob.type || "image/jpeg",
     });
 
   if (error) {
@@ -61,6 +104,22 @@ export async function uploadPostMedia(filePath: string, file: File) {
     .from("post-media")
     .upload(filePath, file, {
       upsert: true,
+    });
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}
+
+export async function uploadPostMediaFromUri(filePath: string, uri: string) {
+  const blob = await uriToBlob(uri);
+  const { data, error } = await supabase.storage
+    .from("post-media")
+    .upload(filePath, blob, {
+      upsert: true,
+      contentType: blob.type || "image/jpeg",
     });
 
   if (error) {

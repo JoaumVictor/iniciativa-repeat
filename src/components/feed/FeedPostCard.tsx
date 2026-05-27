@@ -1,4 +1,4 @@
-import { Text, View } from "react-native";
+import { Image, Text, View } from "react-native";
 
 import { PostComments } from "@/components/feed/PostComments";
 import { Card } from "@/components/ui/Card";
@@ -32,6 +32,15 @@ export function FeedPostCard({ post }: FeedPostCardProps) {
         <Text className="text-base leading-6 text-slate-200">
           {post.text_content}
         </Text>
+      ) : null}
+      {post.image_url ? (
+        <View className="overflow-hidden rounded-2xl border border-white/10">
+          <Image
+            source={{ uri: post.image_url }}
+            className="h-56 w-full"
+            resizeMode="cover"
+          />
+        </View>
       ) : null}
       <View className="flex-row gap-4">
         <Text className="text-sm text-slate-300">Likes {post.like_count}</Text>
