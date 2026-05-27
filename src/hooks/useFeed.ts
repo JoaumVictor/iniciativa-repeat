@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { supabase } from "@/api/supabaseClient";
 import { listMyFeedPosts, listPartyFeedPosts } from "@/api/feed";
+import { isSupabaseConfigured } from "@/config/env";
 import { queryKeys } from "@/api/queryKeys";
 
 export function useMyFeedPosts() {
@@ -10,9 +11,14 @@ export function useMyFeedPosts() {
   const query = useQuery({
     queryKey: queryKeys.feed.my,
     queryFn: listMyFeedPosts,
+    enabled: isSupabaseConfigured,
   });
 
   useEffect(() => {
+    if (!isSupabaseConfigured) {
+      return;
+    }
+
     const channel = supabase
       .channel("feed:my:posts")
       .on(
@@ -41,11 +47,11 @@ export function usePartyFeedPosts(partyId: string) {
   const query = useQuery({
     queryKey: queryKeys.feed.party(partyId),
     queryFn: () => listPartyFeedPosts(partyId),
-    enabled: Boolean(partyId),
+    enabled: Boolean(partyId) && isSupabaseConfigured,
   });
 
   useEffect(() => {
-    if (!partyId) {
+    if (!partyId || !isSupabaseConfigured) {
       return;
     }
 

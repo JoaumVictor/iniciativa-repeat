@@ -1,9 +1,17 @@
 import { createClient } from "@supabase/supabase-js";
 
-import { SUPABASE_ANON_KEY, SUPABASE_URL } from "@/config/env";
+import {
+  SUPABASE_ANON_KEY,
+  SUPABASE_URL,
+  isSupabaseConfigured,
+  supabaseConfigMessage,
+} from "@/config/env";
 import { useAuthStore } from "@/store/authStore";
 
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+const supabaseUrl = SUPABASE_URL || "https://placeholder.supabase.co";
+const supabaseAnonKey = SUPABASE_ANON_KEY || "placeholder-anon-key";
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     persistSession: false,
     autoRefreshToken: false,
@@ -14,4 +22,10 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
 
 export function getSupabaseAccessToken() {
   return useAuthStore.getState().accessToken;
+}
+
+export function ensureSupabaseConfigured() {
+  if (!isSupabaseConfigured) {
+    throw new Error(supabaseConfigMessage);
+  }
 }

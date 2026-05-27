@@ -6,12 +6,25 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
+    "icon": "./src/assets/icon.png",
     "plugins": ["expo-router"],
     "experiments": {
       "typedRoutes": true
     },
+    "splash": {
+      "image": "./src/assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#020617"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./src/assets/icon.png",
+        "backgroundColor": "#020617"
+      }
+    },
     "web": {
-      "bundler": "metro"
+      "bundler": "metro",
+      "favicon": "./src/assets/icon.png"
     }
   }
 }

@@ -1,13 +1,15 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { getMyProfile, updateMyProfile } from "@/api/profiles";
 import { queryKeys } from "@/api/queryKeys";
 import type { UpdateProfileInput } from "@/api/profiles";
+import { isSupabaseConfigured } from "@/config/env";
 
 export function useMyProfile() {
   return useQuery({
     queryKey: queryKeys.profile.me,
     queryFn: getMyProfile,
+    enabled: isSupabaseConfigured,
   });
 }
 

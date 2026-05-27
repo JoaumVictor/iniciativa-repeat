@@ -7,12 +7,14 @@ import {
   listMyParties,
   unfavoriteParty,
 } from "@/api/parties";
+import { isSupabaseConfigured } from "@/config/env";
 import { queryKeys } from "@/api/queryKeys";
 
 export function useMyParties() {
   return useQuery({
     queryKey: queryKeys.parties.all,
     queryFn: listMyParties,
+    enabled: isSupabaseConfigured,
   });
 }
 

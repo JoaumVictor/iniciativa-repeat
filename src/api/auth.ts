@@ -1,9 +1,14 @@
-import { supabase } from "@/api/supabaseClient";
-import { SUPABASE_GOOGLE_WEB_CLIENT_ID } from "@/config/env";
+import { ensureSupabaseConfigured, supabase } from "@/api/supabaseClient";
+import {
+  SUPABASE_GOOGLE_WEB_CLIENT_ID,
+  isSupabaseConfigured,
+} from "@/config/env";
 import { saveTokens, clearTokens } from "@/services/tokenStorage";
 import { useAuthStore } from "@/store/authStore";
 
 export async function signInWithGoogle() {
+  ensureSupabaseConfigured();
+
   const result = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
@@ -21,6 +26,8 @@ export async function signInWithGoogle() {
 
   return result;
 }
+
+export { isSupabaseConfigured };
 
 export async function hydrateSessionFromAuthTokens(tokens: {
   accessToken: string;

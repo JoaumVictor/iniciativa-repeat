@@ -9,17 +9,18 @@ import {
 } from "@/api/posts";
 import { queryKeys } from "@/api/queryKeys";
 import { supabase } from "@/api/supabaseClient";
+import { isSupabaseConfigured } from "@/config/env";
 
 export function usePostComments(postId: string) {
   const queryClient = useQueryClient();
   const query = useQuery({
     queryKey: queryKeys.comments.byPost(postId),
     queryFn: () => listCommentsByPost(postId),
-    enabled: Boolean(postId),
+    enabled: Boolean(postId) && isSupabaseConfigured,
   });
 
   useEffect(() => {
-    if (!postId) {
+    if (!postId || !isSupabaseConfigured) {
       return;
     }
 

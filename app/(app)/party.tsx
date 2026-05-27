@@ -25,6 +25,9 @@ export default function PartyScreen() {
   const [partyName, setPartyName] = useState("");
   const [inviteCode, setInviteCode] = useState("");
   const [feedback, setFeedback] = useState<FeedbackState | null>(null);
+  const [favoritePartyIdInFlight, setFavoritePartyIdInFlight] = useState<
+    string | null
+  >(null);
 
   const { data: parties = [], isLoading } = useMyParties();
   const { data: favoritePartyIds = [] } = useMyFavoritePartyIds();
@@ -79,6 +82,39 @@ export default function PartyScreen() {
         type: "error",
         message: getErrorMessage(error, "Não foi possível entrar na party."),
       });
+    }
+  };
+
+  const handleToggleFavorite = async (partyId: string, isFavorite: boolean) => {
+    setFeedback(null);
+    setFavoritePartyIdInFlight(partyId);
+
+    try {
+      if (isFavorite) {
+        await unfavoritePartyMutation.mutateAsync(partyId);
+        setFeedback({
+          type: "success",
+          message: "Party removida dos seus favoritos.",
+        });
+      } else {
+        await favoritePartyMutation.mutateAsync(partyId);
+        setFeedback({
+          type: "success",
+          message: "Party adicionada aos favoritos.",
+        });
+      }
+    } catch (error) {
+      setFeedback({
+        type: "error",
+        message: getErrorMessage(
+          error,
+          isFavorite
+            ? "Não foi possível remover a party dos favoritos."
+            : "Não foi possível favoritar a party.",
+        ),
+      });
+    } finally {
+      setFavoritePartyIdInFlight(null);
     }
   };
 
@@ -168,10 +204,9 @@ export default function PartyScreen() {
               key={party.id}
               party={party}
               isFavorite={favoritePartyIdSet.has(party.id)}
-              onFavorite={(partyId) => favoritePartyMutation.mutate(partyId)}
-              onUnfavorite={(partyId) =>
-                unfavoritePartyMutation.mutate(partyId)
-              }
+              favoriteBusy={favoritePartyIdInFlight === party.id}
+              onFavorite={(partyId) => handleToggleFavorite(partyId, false)}
+              onUnfavorite={(partyId) => handleToggleFavorite(partyId, true)}
             />
           ))}
         </View>

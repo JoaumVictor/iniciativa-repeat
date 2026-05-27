@@ -1,13 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { createPost, deletePost, getPostById, updatePost } from "@/api/posts";
+import { isSupabaseConfigured } from "@/config/env";
 import { queryKeys } from "@/api/queryKeys";
 
 export function usePostDetail(postId: string) {
   return useQuery({
     queryKey: queryKeys.posts.detail(postId),
     queryFn: () => getPostById(postId),
-    enabled: Boolean(postId),
+    enabled: Boolean(postId) && isSupabaseConfigured,
   });
 }
 
