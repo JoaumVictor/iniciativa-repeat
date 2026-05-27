@@ -1,25 +1,19 @@
 import { useState } from "react";
-import { router } from "expo-router";
 import { Text, View } from "react-native";
 
+import { signInWithGoogle } from "@/api/auth";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { Screen } from "@/components/ui/Screen";
 import { Card } from "@/components/ui/Card";
-import { useAuthStore } from "@/store/authStore";
 
 export default function LoginScreen() {
-  const signIn = useAuthStore((state) => state.signIn);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleLogin = async () => {
     setIsSubmitting(true);
 
     try {
-      await signIn({
-        accessToken: "demo-access-token",
-        refreshToken: "demo-refresh-token",
-      });
-      router.replace("/(app)");
+      await signInWithGoogle();
     } finally {
       setIsSubmitting(false);
     }
@@ -35,12 +29,15 @@ export default function LoginScreen() {
       </View>
 
       <Card className="gap-4">
-        <Text className="text-lg font-semibold text-white">Entrar</Text>
+        <Text className="text-lg font-semibold text-white">
+          Entrar com Google
+        </Text>
         <Text className="text-sm leading-5 text-slate-300">
-          Esta tela usa uma sessão demo local para habilitar o fluxo protegido.
+          O login será vinculado ao perfil do Supabase assim que as chaves forem
+          configuradas.
         </Text>
         <PrimaryButton
-          title={isSubmitting ? "Entrando..." : "Acessar app"}
+          title={isSubmitting ? "Abrindo login..." : "Continuar com Google"}
           onPress={handleLogin}
           disabled={isSubmitting}
         />

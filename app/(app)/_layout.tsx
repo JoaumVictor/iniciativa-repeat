@@ -17,10 +17,10 @@ export default function AppLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Início",
+          title: "Feed",
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
-              name="view-dashboard-outline"
+              name="home-outline"
               color={color}
               size={size}
             />
@@ -28,12 +28,25 @@ export default function AppLayout() {
         }}
       />
       <Tabs.Screen
-        name="items"
+        name="post"
         options={{
-          title: "Itens",
+          title: "Postar",
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
-              name="cube-outline"
+              name="plus-circle"
+              color={color}
+              size={size + 8}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: "Perfil",
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons
+              name="account-circle-outline"
               color={color}
               size={size}
             />
