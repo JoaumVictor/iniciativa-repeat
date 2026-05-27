@@ -4,8 +4,8 @@ import * as SecureStore from "expo-secure-store";
 import { AuthTokens } from "@/types/auth";
 
 const STORAGE_KEYS = {
-  accessToken: "dilla-gym.access-token",
-  refreshToken: "dilla-gym.refresh-token",
+  accessToken: "iniciativarepeat.access-token",
+  refreshToken: "iniciativarepeat.refresh-token",
 } as const;
 
 function canUseWebStorage() {
