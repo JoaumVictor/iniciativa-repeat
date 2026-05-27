@@ -15,8 +15,8 @@ export function Screen({
   if (scroll) {
     return (
       <ScrollView
-        className={`flex-1 bg-surface-950 ${className}`}
-        contentContainerClassName="flex-grow"
+        className="flex-1 bg-surface-950"
+        contentContainerClassName={`flex-grow ${className}`}
       >
         {children}
       </ScrollView>

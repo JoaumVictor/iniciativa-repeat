@@ -20,6 +20,14 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   accessToken: async () => getSupabaseAccessToken(),
 });
 
+export const supabaseAuth = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    persistSession: false,
+    autoRefreshToken: false,
+    detectSessionInUrl: false,
+  },
+});
+
 export function getSupabaseAccessToken() {
   return useAuthStore.getState().accessToken;
 }

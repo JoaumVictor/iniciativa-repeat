@@ -1,7 +1,13 @@
-import { supabase } from "@/api/supabaseClient";
+import { getSupabaseAccessToken, supabaseAuth } from "@/api/supabaseClient";
 
 export async function getCurrentUserId() {
-  const { data, error } = await supabase.auth.getUser();
+  const accessToken = getSupabaseAccessToken();
+
+  if (!accessToken) {
+    throw new Error("Usuário não autenticado");
+  }
+
+  const { data, error } = await supabaseAuth.auth.getUser(accessToken);
 
   if (error) {
     throw error;

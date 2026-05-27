@@ -1,5 +1,7 @@
 import { useState } from "react";
+import { router } from "expo-router";
 import { Image, Text, View } from "react-native";
+import { Alert } from "react-native";
 
 import { signInWithGoogle } from "@/api/auth";
 import { appLogo } from "@/assets";
@@ -15,7 +17,16 @@ export default function LoginScreen() {
     setIsSubmitting(true);
 
     try {
-      await signInWithGoogle();
+      const didAuthenticate = await signInWithGoogle();
+
+      if (didAuthenticate) {
+        router.replace("/(app)");
+      }
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Falha ao iniciar login.";
+
+      Alert.alert("Erro no login", message);
     } finally {
       setIsSubmitting(false);
     }
