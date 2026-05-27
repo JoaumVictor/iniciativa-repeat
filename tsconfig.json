@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "ignoreDeprecations": "6.0",
+    "target": "es2020",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "jsx": "react-native",
+    "lib": ["es2020"],
+    "allowJs": false,
+    "noEmit": true,
+    "isolatedModules": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "types": ["nativewind/types"]
+  },
+  "include": [
+    "app/**/*.ts",
+    "app/**/*.tsx",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "nativewind-env.d.ts"
+  ],
+  "exclude": ["node_modules"]
+}

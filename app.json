@@ -1,0 +1,17 @@
+{
+  "expo": {
+    "name": "Dilla Gym",
+    "slug": "dilla-gym",
+    "scheme": "dillagym",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "plugins": ["expo-router"],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "web": {
+      "bundler": "metro"
+    }
+  }
+}
