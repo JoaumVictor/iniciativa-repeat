@@ -1,0 +1,15 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/client"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+/// Prisma aqui e complementar ao Supabase.
+/// RLS, triggers, RPCs, buckets e policies continuam sendo mantidos em api/supabase_init.sql.
+/// Depois de configurar DATABASE_URL e DIRECT_URL, rode `npm run prisma:db:pull`
+/// para introspectar o banco real e popular este schema com os modelos atuais.

@@ -92,14 +92,8 @@ export default function PostScreen() {
         imageUrl = null;
       }
 
-      if (selectedImageUri) {
-        const fileName = `${partyId}/${Date.now().toString(36)}.jpg`;
-        await uploadPostMediaFromUri(fileName, selectedImageUri);
-        imageUrl = getPublicAssetUrl("post-media", fileName);
-      }
-
       if (isEditing && postId) {
-        await updatePostMutation.mutateAsync({
+        const updatedPost = await updatePostMutation.mutateAsync({
           postId,
           input: {
             party_id: partyId,
@@ -107,12 +101,38 @@ export default function PostScreen() {
             image_url: imageUrl,
           },
         });
+
+        if (selectedImageUri) {
+          const fileName = `${partyId}/${updatedPost.id}-${Date.now().toString(36)}.jpg`;
+          await uploadPostMediaFromUri(fileName, selectedImageUri);
+          imageUrl = getPublicAssetUrl("post-media", fileName);
+
+          await updatePostMutation.mutateAsync({
+            postId: updatedPost.id,
+            input: {
+              image_url: imageUrl,
+            },
+          });
+        }
       } else {
-        await createPostMutation.mutateAsync({
+        const createdPost = await createPostMutation.mutateAsync({
           party_id: partyId,
           text_content: content.trim(),
           image_url: imageUrl,
         });
+
+        if (selectedImageUri) {
+          const fileName = `${partyId}/${createdPost.id}-${Date.now().toString(36)}.jpg`;
+          await uploadPostMediaFromUri(fileName, selectedImageUri);
+          imageUrl = getPublicAssetUrl("post-media", fileName);
+
+          await updatePostMutation.mutateAsync({
+            postId: createdPost.id,
+            input: {
+              image_url: imageUrl,
+            },
+          });
+        }
       }
 
       Alert.alert(
@@ -155,7 +175,7 @@ export default function PostScreen() {
         <Text className="mt-2 text-base leading-6 text-slate-300">
           {isEditing
             ? "Edite o texto e troque a imagem quando precisar."
-            : "Depois vamos ligar esse formulário ao upload de imagem e ao backend."}
+            : "Publique texto e imagem direto na sua party com as regras do backend aplicadas."}
         </Text>
       </View>
 

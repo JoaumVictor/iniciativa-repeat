@@ -985,7 +985,12 @@ create policy "storage_insert_authenticated_post_media"
 on storage.objects
 for insert
 to authenticated
-with check (bucket_id = 'post-media' and owner_id = auth.uid()::text);
+with check (
+  bucket_id = 'post-media'
+  and owner_id = auth.uid()::text
+  and array_length(storage.foldername(name), 1) >= 1
+  and public.is_party_member((storage.foldername(name))[1]::uuid)
+);
 
 drop policy if exists "storage_update_own_objects" on storage.objects;
 create policy "storage_update_own_objects"

@@ -94,6 +94,8 @@ export async function listPartyMembers(partyId: string) {
 }
 
 export async function joinPartyByCode(inviteCode: string) {
+  await getMyProfile();
+
   const { data, error } = await supabase.rpc("join_party_by_code", {
     party_invite_code: inviteCode,
   });
@@ -106,7 +108,8 @@ export async function joinPartyByCode(inviteCode: string) {
 }
 
 export async function favoriteParty(partyId: string) {
-  const userId = await getCurrentUserId();
+  const profile = await getMyProfile();
+  const userId = profile.id;
   const { data, error } = await supabase
     .from("party_favorites")
     .insert({ party_id: partyId, user_id: userId })

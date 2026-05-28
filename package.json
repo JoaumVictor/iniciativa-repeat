@@ -9,7 +9,19 @@
     "android": "expo run:android",
     "web": "expo start --web",
     "clear-cache": "expo start --clear",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package",
+    "prisma:db:pull": "prisma db pull --schema api/prisma/schema.prisma",
+    "prisma:generate": "prisma generate --schema api/prisma/schema.prisma",
+    "prisma:format": "prisma format --schema api/prisma/schema.prisma",
+    "prisma:studio": "prisma studio --schema api/prisma/schema.prisma",
+    "supabase": "supabase",
+    "supabase:init": "supabase init",
+    "supabase:start": "supabase start",
+    "supabase:stop": "supabase stop",
+    "supabase:status": "supabase status",
+    "supabase:db:push": "supabase db push",
+    "supabase:db:reset": "supabase db reset",
+    "supabase:functions:serve": "supabase functions serve"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",
@@ -47,10 +59,13 @@
     "zustand": "^5.0.0"
   },
   "devDependencies": {
+    "@prisma/client": "^6.9.0",
     "@babel/core": "^7.25.0",
     "@types/react": "^19.1.1",
     "babel-preset-expo": "~55.0.22",
     "patch-package": "^8.0.1",
+    "prisma": "^6.9.0",
+    "supabase": "^2.27.4",
     "typescript": "~5.9.2"
   }
 }

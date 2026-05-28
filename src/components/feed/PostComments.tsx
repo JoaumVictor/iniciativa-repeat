@@ -1,5 +1,5 @@
-import { Alert, useState } from "react";
-import { Text, TextInput, View } from "react-native";
+import { useState } from "react";
+import { Alert, Text, TextInput, View } from "react-native";
 
 import { Card } from "@/components/ui/Card";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
@@ -22,7 +22,6 @@ function getCommentAuthorName(
   if (!author) {
     return "Membro da party";
   }
-  const [feedback, setFeedback] = useState<FeedbackState | null>(null);
 
   return author.nickname ?? author.username ?? "Membro da party";
 }
@@ -41,6 +40,7 @@ export function PostComments({
   const [draft, setDraft] = useState("");
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [editingDraft, setEditingDraft] = useState("");
+  const [feedback, setFeedback] = useState<FeedbackState | null>(null);
   const { data: comments = [], isLoading } = usePostComments(postId);
   const createCommentMutation = useCreateCommentMutation(postId, partyId);
   const updateCommentMutation = useUpdateCommentMutation(postId, partyId);
