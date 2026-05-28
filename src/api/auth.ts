@@ -1,5 +1,6 @@
 import * as QueryParams from "expo-auth-session/build/QueryParams";
 import { makeRedirectUri } from "expo-auth-session";
+import Constants, { ExecutionEnvironment } from "expo-constants";
 import * as WebBrowser from "expo-web-browser";
 
 import { ensureSupabaseConfigured, supabaseAuth } from "@/api/supabaseClient";
@@ -24,6 +25,12 @@ function getGoogleRedirectUrl() {
 
 export async function signInWithGoogle() {
   ensureSupabaseConfigured();
+
+  if (Constants.executionEnvironment === ExecutionEnvironment.StoreClient) {
+    throw new Error(
+      "O login com Google nao funciona no Expo Go. Gere um development build com npm run android e teste nele.",
+    );
+  }
 
   const redirectTo = getGoogleRedirectUrl();
 

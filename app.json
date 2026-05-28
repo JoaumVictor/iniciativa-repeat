@@ -28,7 +28,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/icon.png",
         "backgroundColor": "#020617"
-      }
+      },
+      "package": "com.victorfausto.iniciativarepeat"
     },
     "web": {
       "bundler": "metro",
