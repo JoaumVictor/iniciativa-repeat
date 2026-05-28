@@ -175,6 +175,9 @@ export default function PostScreen() {
           className="min-h-40 rounded-2xl border border-white/10 bg-slate-900 px-4 py-4 text-base text-white"
           textAlignVertical="top"
           editable={!isPostLoading}
+          autoCapitalize="sentences"
+          autoCorrect
+          spellCheck
         />
         {previewImageUri ? (
           <View className="overflow-hidden rounded-2xl border border-white/10">

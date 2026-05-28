@@ -56,12 +56,12 @@ export default function HomeScreen() {
               Feed da turma
             </Text>
             <Text className="text-4xl font-bold text-white">
-              {profile?.nickname ?? profile?.username ?? "Atleta"}, sua crew
-              j\u00e1 treinou hoje?
+              {profile?.nickname ?? profile?.username ?? "Atleta"}, sua crew já
+              treinou hoje?
             </Text>
             <Text className="max-w-[320px] text-base leading-6 text-slate-300">
-              Acompanhe posts das suas parties, puxe conversa no coment\u00e1rio
-              e mantenha o ritmo da semana vis\u00edvel para todo mundo.
+              Acompanhe posts das suas parties, puxe conversa no comentário e
+              mantenha o ritmo da semana visível para todo mundo.
             </Text>
           </View>
 
@@ -84,7 +84,7 @@ export default function HomeScreen() {
             </View>
             <View className="min-w-28 rounded-2xl border border-white/10 bg-black/20 px-4 py-3">
               <Text className="text-xs uppercase tracking-[0.15em] text-slate-400">
-                \u00daltimo movimento
+                Último movimento
               </Text>
               <Text className="mt-2 text-2xl font-bold text-white">
                 {stats.latestPostDate}
@@ -109,7 +109,7 @@ export default function HomeScreen() {
       {!isSupabaseConfigured ? (
         <Card className="gap-4">
           <Text className="text-lg font-semibold text-white">
-            Backend aguardando configura\u00e7\u00e3o
+            Backend aguardando configuração
           </Text>
           <Text className="text-sm leading-6 text-slate-300">
             {supabaseConfigMessage}
@@ -132,11 +132,11 @@ export default function HomeScreen() {
       ) : (
         <Card className="gap-4">
           <Text className="text-lg font-semibold text-white">
-            Seu feed ainda est\u00e1 vazio
+            Seu feed ainda está vazio
           </Text>
           <Text className="text-sm leading-6 text-slate-300">
-            Entre em uma party ou crie a sua primeira comunidade para
-            come\u00e7ar a postar e acompanhar a turma.
+            Entre em uma party ou crie a sua primeira comunidade para começar a
+            postar e acompanhar a turma.
           </Text>
           <View className="flex-row gap-3">
             <PrimaryButton

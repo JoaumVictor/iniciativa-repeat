@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { ScrollView, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 type ScreenProps = {
   children: ReactNode;
@@ -14,16 +15,26 @@ export function Screen({
 }: ScreenProps) {
   if (scroll) {
     return (
-      <ScrollView
-        className="flex-1 bg-surface-950"
-        contentContainerClassName={`flex-grow ${className}`}
-      >
-        {children}
-      </ScrollView>
+      <SafeAreaView edges={["top"]} className="flex-1 bg-surface-950">
+        <ScrollView
+          className="flex-1"
+          contentContainerClassName={`flex-grow pb-8 ${className}`}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
+          automaticallyAdjustKeyboardInsets
+        >
+          {children}
+        </ScrollView>
+      </SafeAreaView>
     );
   }
 
   return (
-    <View className={`flex-1 bg-surface-950 ${className}`}>{children}</View>
+    <SafeAreaView
+      edges={["top"]}
+      className={`flex-1 bg-surface-950 ${className}`}
+    >
+      {children}
+    </SafeAreaView>
   );
 }

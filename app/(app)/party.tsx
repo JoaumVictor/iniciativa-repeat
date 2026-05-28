@@ -159,6 +159,9 @@ export default function PartyScreen() {
           value={partyName}
           onChangeText={setPartyName}
           className="rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-base text-white"
+          autoCapitalize="words"
+          autoCorrect
+          spellCheck
         />
         <PrimaryButton
           title={createPartyMutation.isPending ? "Criando..." : "Criar party"}
@@ -176,6 +179,9 @@ export default function PartyScreen() {
           value={inviteCode}
           onChangeText={setInviteCode}
           className="rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-base text-white"
+          autoCapitalize="none"
+          autoCorrect={false}
+          spellCheck={false}
         />
         <PrimaryButton
           title={joinPartyMutation.isPending ? "Entrando..." : "Entrar"}
@@ -216,8 +222,8 @@ export default function PartyScreen() {
             Nenhuma party por aqui ainda
           </Text>
           <Text className="text-sm leading-6 text-slate-300">
-            Crie uma party com seu grupo de treino ou entre usando um
-            c\u00f3digo de convite para destravar o feed.
+            Crie uma party com seu grupo de treino ou entre usando um código de
+            convite para destravar o feed.
           </Text>
           <View className="flex-row gap-3">
             <PrimaryButton
@@ -226,7 +232,7 @@ export default function PartyScreen() {
               disabled={!partyName.trim() || createPartyMutation.isPending}
             />
             <PrimaryButton
-              title="Entrar com c\u00f3digo"
+              title="Entrar com código"
               variant="secondary"
               onPress={handleJoinParty}
               disabled={!inviteCode.trim() || joinPartyMutation.isPending}

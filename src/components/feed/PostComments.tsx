@@ -152,6 +152,9 @@ export function PostComments({
             onChangeText={setDraft}
             className="min-h-16 text-base text-white"
             multiline
+            autoCapitalize="sentences"
+            autoCorrect
+            spellCheck
           />
           <PrimaryButton
             title={createCommentMutation.isPending ? "Enviando..." : "Comentar"}
@@ -193,6 +196,9 @@ export function PostComments({
                     placeholderTextColor="#64748b"
                     className="min-h-16 rounded-2xl border border-white/10 bg-slate-900 px-3 py-3 text-white"
                     multiline
+                    autoCapitalize="sentences"
+                    autoCorrect
+                    spellCheck
                   />
                   <View className="flex-row gap-2">
                     <PrimaryButton

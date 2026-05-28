@@ -1,5 +1,5 @@
 import { supabase } from "@/api/supabaseClient";
-import { getCurrentUserId } from "@/api/session";
+import { getMyProfile } from "@/api/profiles";
 import type {
   PartyFavoriteRow,
   PartyJoinRequestRow,
@@ -24,18 +24,20 @@ export type CreatePartyInput = {
 };
 
 export async function createParty(input: CreatePartyInput) {
-  const ownerId = await getCurrentUserId();
-  const { data, error } = await supabase
+  const profile = await getMyProfile();
+  const ownerId = profile.id;
+  const { error } = await supabase
     .from("parties")
-    .insert({ ...input, owner_id: ownerId })
-    .select("*")
-    .single();
+    .insert({ ...input, owner_id: ownerId });
 
   if (error) {
     throw error;
   }
 
-  return data as PartyRow;
+  return {
+    ...input,
+    owner_id: ownerId,
+  } as PartyRow;
 }
 
 export async function listMyParties() {

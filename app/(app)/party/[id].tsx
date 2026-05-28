@@ -174,7 +174,7 @@ export default function PartyDetailScreen() {
           <Text className="text-slate-300">Carregando membros...</Text>
         ) : members.length === 0 ? (
           <Text className="text-sm leading-6 text-slate-300">
-            Ainda n\u00e3o h\u00e1 membros ativos vis\u00edveis nessa party.
+            Ainda não há membros ativos visíveis nessa party.
           </Text>
         ) : (
           <View className="gap-2">
@@ -229,8 +229,8 @@ export default function PartyDetailScreen() {
               Abra o placar da party
             </Text>
             <Text className="text-sm leading-6 text-slate-300">
-              Essa party ainda n\u00e3o tem posts. Publique o primeiro treino,
-              PR ou foto para puxar a conversa.
+              Essa party ainda não tem posts. Publique o primeiro treino, PR ou
+              foto para puxar a conversa.
             </Text>
             <PrimaryButton
               title="Publicar primeiro post"

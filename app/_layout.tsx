@@ -37,7 +37,11 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <QueryClientProvider client={queryClient}>
-          <StatusBar style="light" />
+          <StatusBar
+            style="light"
+            backgroundColor="#0b1120"
+            translucent={false}
+          />
           <Stack
             screenOptions={{
               headerShown: false,
