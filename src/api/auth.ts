@@ -1,4 +1,5 @@
-import * as Linking from "expo-linking";
+import * as QueryParams from "expo-auth-session/build/QueryParams";
+import { makeRedirectUri } from "expo-auth-session";
 import * as WebBrowser from "expo-web-browser";
 
 import { ensureSupabaseConfigured, supabaseAuth } from "@/api/supabaseClient";
@@ -11,10 +12,20 @@ import { useAuthStore } from "@/store/authStore";
 
 WebBrowser.maybeCompleteAuthSession();
 
+const AUTH_CALLBACK_PATH = "auth/callback";
+const APP_SCHEME = "iniciativarepeat";
+
+function getGoogleRedirectUrl() {
+  return makeRedirectUri({
+    path: AUTH_CALLBACK_PATH,
+    scheme: APP_SCHEME,
+  });
+}
+
 export async function signInWithGoogle() {
   ensureSupabaseConfigured();
 
-  const redirectTo = Linking.createURL("auth/callback");
+  const redirectTo = getGoogleRedirectUrl();
 
   const result = await supabaseAuth.auth.signInWithOAuth({
     provider: "google",
@@ -82,8 +93,16 @@ export async function signOutFromSupabase() {
 }
 
 async function resolveSessionTokens(callbackUrl: string) {
-  const parsedUrl = new URL(callbackUrl);
-  const authCode = parsedUrl.searchParams.get("code");
+  const { params, errorCode } = QueryParams.getQueryParams(callbackUrl);
+
+  if (errorCode) {
+    throw new Error(errorCode);
+  }
+
+  const authCode =
+    typeof params.code === "string" && params.code.length > 0
+      ? params.code
+      : null;
 
   if (authCode) {
     const { data, error } =
@@ -106,9 +125,10 @@ async function resolveSessionTokens(callbackUrl: string) {
     };
   }
 
-  const hashParams = new URLSearchParams(callbackUrl.split("#")[1] ?? "");
-  const accessToken = hashParams.get("access_token");
-  const refreshToken = hashParams.get("refresh_token");
+  const accessToken =
+    typeof params.access_token === "string" ? params.access_token : null;
+  const refreshToken =
+    typeof params.refresh_token === "string" ? params.refresh_token : null;
 
   if (!accessToken || !refreshToken) {
     throw new Error(
